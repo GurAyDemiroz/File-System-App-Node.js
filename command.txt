@@ -1,1 +1,1 @@
-Güray Güray a
+create a file text.txt
