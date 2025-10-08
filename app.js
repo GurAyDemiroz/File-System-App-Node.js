@@ -1,8 +1,14 @@
 import * as fs from "node:fs/promises";
 import { Buffer } from "node:buffer";
+import path from "node:path";
 
 // open (32) file description
 // read or write
+
+const CREATE_FILE_COMMAND = "create a file";
+const DELETE_FILE_COMMAND = "delete the file";
+const RENAME_FILE_COMMAND = "rename the file";
+const ADD_TO_FILE_COMMAND = "add to the file";
 
 
 (async () => {
@@ -20,7 +26,30 @@ import { Buffer } from "node:buffer";
 
   };
 
-  const CREATE_COMMAND = "create a file";
+  const deleteFile = async (path) => {
+    try {
+      await fs.unlink(path);
+      console.log("Dosya başarıyla silindi.");
+    } catch (error) {
+      if (error.code === "ENOENT") {
+        console.log(`${path} dosyası bulunamadı (zaten silinmiş olabilir).`);
+      } else {
+        console.log("Bir hatayla karşılaşıldı", error.message);
+      }
+    }
+  };
+
+  async function renameFile(oldPath, newPath){
+    try{
+      await fs.rename(oldPath, newPath);
+      console.log("Dosya adı başarıyla değiştirildi");
+    } catch (error) {
+      console.log("bir hatayla karşılaşıldı", error.message);
+    }
+  }
+
+  
+
   
   const commandFileHandler = await fs.open("./command.txt", "r");
   // flags parametresinin default değeri r
@@ -54,16 +83,41 @@ import { Buffer } from "node:buffer";
 
       // dosya oluştur
       // create a file <path>
-      if(command.includes(CREATE_COMMAND)){
-        const filePath = command.substring(CREATE_COMMAND.length + 1);
+      if(command.includes(CREATE_FILE_COMMAND)){
+        const filePath = command.substring(CREATE_FILE_COMMAND.length + 1);
         await createFile(filePath);
+      }
+
+      // dosyayı sil
+      // delete the file <path>
+      else if (command.includes(DELETE_FILE_COMMAND)) {
+        const filePath = command.substring(DELETE_FILE_COMMAND.length + 1);
+        await deleteFile(filePath);
+      }
+
+      // dosyanın adını değiştir
+      // rename the file <path> to <new-path>
+      else if (command.includes(RENAME_FILE_COMMAND)) {
+        const _index = command.indexOf(" to ");
+        const newPath = command.substring(_index + 4);
+
+        const oldPath = command.substring(RENAME_FILE_COMMAND.length + 1, _index);
+
+        await renameFile(oldPath, newPath);
+      }
+
+      // dosyaya ekle
+      // add to the file <path>
+      else if (command.includes(ADD_TO_FILE_COMMAND)) {
+        const filePath = command.substring(ADD_TO_FILE_COMMAND.length + 1);
+        await addToFile(filePath);
       }
 
   });
 
+
   const watcher = fs.watch("./command.txt", { encoding: "utf-8" });
   // encoding paramateresi default'u utf-8
-
 
   for await (const event of watcher) {
     if (event.eventType === "change" && event.filename === "command.txt") {
@@ -97,3 +151,12 @@ import { Buffer } from "node:buffer";
     }
   }
 })();
+
+
+
+
+// Tüm <FileHandle> nesneleri <EventEmitter> nesneleridir.
+
+// flag'lar resmi dokümantasyonda File System'in en altında 
+
+

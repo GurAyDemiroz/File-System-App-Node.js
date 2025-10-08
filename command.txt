@@ -1,1 +1,1 @@
-create a file text.txt
+rename the file deneme9.js to deneme10.js
