@@ -1,6 +1,5 @@
 import * as fs from "node:fs/promises";
 import { Buffer } from "node:buffer";
-import path from "node:path";
 
 // open (32) file description
 // read or write
@@ -44,11 +43,43 @@ const ADD_TO_FILE_COMMAND = "add to the file";
       await fs.rename(oldPath, newPath);
       console.log("Dosya adı başarıyla değiştirildi");
     } catch (error) {
-      console.log("bir hatayla karşılaşıldı", error.message);
+      if(error.code === "ENOENT"){
+        console.log(`${oldPath} dosyası bulunamadı (silinmiş olabilir).`);
+      } else {
+        console.log("bir hatayla karşılaşıldı", error.message);
+      }
     }
   }
 
-  
+  let addedContent; 
+
+  async function addToFile(path, content) {
+  let fileHandle; 
+
+  if (addedContent === content) return;
+
+  try {
+    fileHandle = await fs.open(path, "a");
+    await fileHandle.write(content);
+    addedContent = content;
+    console.log("içerik başarıyla eklendi");
+  } catch (error) {
+    console.log("bir hatayla karşılaşıldı", error.message);
+  } finally {
+    if (fileHandle) {
+      await fileHandle.close();
+    }
+  }
+}
+  // kolay ama döngü içerisinde yazma yapılacaksa performans verimsiz
+  // async function addToFile(path, content) {
+  //   try {
+  //     await fs.appendFile(path, content, { encoding:"utf8" }); // defaultu utf-8
+  //     console.log("Dosyaya yeni veriler eklendi");
+  //   } catch (error) {
+  //     console.log("bir hatayla karşılaşıldı", error.message);
+  //   }
+  // }
 
   
   const commandFileHandler = await fs.open("./command.txt", "r");
@@ -107,10 +138,24 @@ const ADD_TO_FILE_COMMAND = "add to the file";
       }
 
       // dosyaya ekle
-      // add to the file <path>
+      // add to the file <path> this content: <content>
       else if (command.includes(ADD_TO_FILE_COMMAND)) {
-        const filePath = command.substring(ADD_TO_FILE_COMMAND.length + 1);
-        await addToFile(filePath);
+        const _index = command.indexOf(" this content: ");
+
+        const filePath = command.substring(ADD_TO_FILE_COMMAND.length + 1, _index);
+        const content = command.substring(_index + " this content: ".length - 1);
+
+        await addToFile(filePath, content);
+      }
+
+      else {
+        console.log(
+          "Geçersiz Komut, lütfen bunlardan birini deneyin:\n\n" +
+          "yeni dosya oluşturmak için: create a file <path>\n" +
+          "dosya silmek için: delete the file <path>\n" +
+          "dosya adını değiştirmek için: rename the file <path> to <new-path>\n" +
+          "dosyaya yeni içerik eklemek için: add to the file <path> this content: <content>\n"
+        );
       }
 
   });
@@ -159,4 +204,4 @@ const ADD_TO_FILE_COMMAND = "add to the file";
 
 // flag'lar resmi dokümantasyonda File System'in en altında 
 
-
+// chokidar kütüphanesine bak https://www.npmjs.com/package/chokidar github.com/paulmillr/chokidar
