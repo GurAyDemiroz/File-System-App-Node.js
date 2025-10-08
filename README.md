@@ -3,7 +3,7 @@
 Bu proje, Node.js'in `fs/promises` API'si kullanılarak oluşturulmuş basit bir dosya yönetim sistemi örneğidir.  
 `command.txt` dosyasına yazılan komutları izler ve içeriğe göre dosya işlemlerini (oluşturma, silme, yeniden adlandırma, içerik ekleme) otomatik olarak gerçekleştirir.
 
-Udemy üzerinden **Understanding Node.js: Core Concepts** kursuna çalışırken yapıldı.
+Udemy üzerinden **Understanding Node.js: Core Concepts** kursuna çalışılırken yapıldı.
 
 ---
 
@@ -26,7 +26,7 @@ Udemy üzerinden **Understanding Node.js: Core Concepts** kursuna çalışırken
 2.  **Projeyi Klonlama:**
     Projeyi bilgisayarınıza klonlayın ve proje dizinine geçiş yapın:
     ```bash
-    git clone [https://github.com/GurAyDemiroz/File-System-App-Node.js.git]
+    git clone https://github.com/GurAyDemiroz/File-System-App-Node.js.git
     cd PROJE_DİZİNİ
     ```
 
