@@ -54,22 +54,22 @@ const ADD_TO_FILE_COMMAND = "add to the file";
   let addedContent; 
 
   async function addToFile(path, content) {
-  let fileHandle; 
+    let fileHandle; 
 
-  if (addedContent === content) return;
+    if (addedContent === content) return;
 
-  try {
-    fileHandle = await fs.open(path, "a");
-    await fileHandle.write(content);
-    addedContent = content;
-    console.log("içerik başarıyla eklendi");
-  } catch (error) {
-    console.log("bir hatayla karşılaşıldı", error.message);
-  } finally {
-    if (fileHandle) {
-      await fileHandle.close();
+    try {
+      fileHandle = await fs.open(path, "a");
+      await fileHandle.write(content);
+      addedContent = content;
+      console.log("içerik başarıyla eklendi");
+    } catch (error) {
+      console.log("bir hatayla karşılaşıldı", error.message);
+    } finally {
+      if (fileHandle) {
+        await fileHandle.close();
+      }
     }
-  }
 }
   // kolay ama döngü içerisinde yazma yapılacaksa performans verimsiz
   // async function addToFile(path, content) {
